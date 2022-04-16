@@ -10,7 +10,21 @@ const isInRange = (range: Range, row: number, col: number) => {
 const filterRange = (ranges: Range[], row: number, col: number) => {
   return ranges.filter((range) => isInRange(range, row, col));
 };
+const getTrueColIndex = (
+  combinedRange: Range[],
+  rowIndex: number,
+  colIndex: number,
+) => {
+  const currentCombinedRange = filterRange(combinedRange, rowIndex, colIndex);
 
+  if (currentCombinedRange.length === 1) {
+    return currentCombinedRange[0][3] + 1;
+  } else if (currentCombinedRange.length > 1) {
+    throw new Error('Unexpected range match found');
+  }
+
+  return colIndex;
+};
 export const parseHtmlToTable = (html: string): TableInternal => {
   const table: TableInternal = [];
 
@@ -33,17 +47,7 @@ export const parseHtmlToTable = (html: string): TableInternal => {
     let actualColIndex = 0;
     for (const [, col] of cols.entries()) {
       // Padding combined cells
-      const currentCombinedRange = filterRange(
-        combinedRange,
-        rowIndex,
-        actualColIndex,
-      );
-
-      if (currentCombinedRange.length === 1) {
-        actualColIndex = currentCombinedRange[0][3] + 1;
-      } else if (currentCombinedRange.length > 1) {
-        throw new Error('Unexpected range match found');
-      }
+      actualColIndex = getTrueColIndex(combinedRange, rowIndex, actualColIndex);
 
       const cell: TableCellInternal = {
         rawContent: col.innerHTML,
@@ -70,7 +74,8 @@ export const parseHtmlToTable = (html: string): TableInternal => {
       actualColIndex++;
     }
 
-    for (let i = 0; i < actualColIndex; i++) {
+    const size = getTrueColIndex(combinedRange, rowIndex, actualColIndex);
+    for (let i = 0; i < size; i++) {
       table[rowIndex][i] = table[rowIndex][i] ?? {
         rawContent: '',
         rowSpan: 1,
