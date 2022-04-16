@@ -10,25 +10,41 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:excel-to-latex-copypaste.helloWorld"
+    "onCommand:excel-to-latex-copypaste.copyTableToLaTeX"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "excel-to-latex-copypaste.helloWorld",
-        "title": "Hello World"
+        "command": "excel-to-latex-copypaste.copyTableToLaTeX",
+        "title": "Paste table from Excel"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "excel-to-latex-copypaste.copyTableToLaTeX",
+          "when": "editorLangId == latex",
+          "group": "latex"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "excel-to-latex-copypaste.copyTableToLaTeX",
+        "key": "ctrl+alt+v",
+        "mac": "cmd+alt+v",
+        "when": "editorTextFocus && resourceLangId == latex"
       }
     ]
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
     "compile": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
-    "precompile": "tsc -p .",
-    "watch": "tsc -watch -p ./",
+    "debug-compile": "yarn run compile -- --sourcemap",
     "pretest": "yarn run compile && yarn run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "tsc -p . && node ./out/test/runTest.js"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
