@@ -52,8 +52,6 @@ export const parseHtmlToTable = (html: string): Table => {
         className: col.getAttribute('class') ?? '',
         inlineStyle: col.getAttribute('style') ?? '',
         combinedChild: false,
-        border: null, // Default values
-        align: 'left',
         fontStyles: [],
         content: [],
       };

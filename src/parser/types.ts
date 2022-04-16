@@ -14,8 +14,9 @@ export interface TableCell {
   rowSpan: number;
   colSpan: number;
   combinedChild: boolean; // Is this cell will be trucuated by col/row span
-  border: [Border, Border, Border, Border] | null;
-  align: Align;
+  border?: [Border, Border, Border, Border];
+  align?: Align;
+  background?: ColorCode;
   fontStyles: FontStyle[];
 }
 export type Table = Array<Array<TableCell>>;
