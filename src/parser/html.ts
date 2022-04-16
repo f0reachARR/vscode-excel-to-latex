@@ -1,5 +1,5 @@
 import { HTMLElement, NodeType, parse as parseHtml } from 'node-html-parser';
-import { Table, TableCellInternal } from './types';
+import { TableInternal, TableCellInternal } from './types';
 
 type Range = [number, number, number, number];
 const isInRange = (range: Range, row: number, col: number) => {
@@ -11,8 +11,8 @@ const filterRange = (ranges: Range[], row: number, col: number) => {
   return ranges.filter((range) => isInRange(range, row, col));
 };
 
-export const parseHtmlToTable = (html: string): Table => {
-  const table: Table = [];
+export const parseHtmlToTable = (html: string): TableInternal => {
+  const table: TableInternal = [];
 
   const dom = parseHtml(html);
   const rows = dom.childNodes

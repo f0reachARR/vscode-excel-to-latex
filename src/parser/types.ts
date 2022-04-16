@@ -26,3 +26,4 @@ export type TableCellInternal = TableCell & {
   rawContent: string;
   inlineStyle: string;
 };
+export type TableInternal = Array<Array<TableCellInternal>>;
