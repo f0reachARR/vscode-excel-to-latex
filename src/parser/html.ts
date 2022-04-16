@@ -69,6 +69,19 @@ export const parseHtmlToTable = (html: string): Table => {
 
       actualColIndex++;
     }
+
+    for (let i = 0; i < actualColIndex; i++) {
+      table[rowIndex][i] = table[rowIndex][i] ?? {
+        rawContent: '',
+        rowSpan: 1,
+        colSpan: 1,
+        className: '',
+        inlineStyle: '',
+        combinedChild: true,
+        fontStyles: [],
+        content: [],
+      };
+    }
   }
 
   return table;
