@@ -1,16 +1,16 @@
 export type ColorCode = string;
 export type Border = ColorCode | null;
 export type Align = 'left' | 'right' | 'center';
-export type FontStyle = 'italic' | 'bold';
+export type FontStyle = 'italic' | 'bold' | 'underline';
 
-export interface DecolatedContent {
+export interface DecoratedContent {
   color: ColorCode | null;
   fontStyles: FontStyle[];
   content: string;
 }
 
 export interface TableCell {
-  content: Array<DecolatedContent>;
+  content: Array<DecoratedContent>;
   rowSpan: number;
   colSpan: number;
   combinedChild: boolean; // Is this cell will be trucuated by col/row span
