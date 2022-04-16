@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import vscode from 'vscode';
 
 export type PlatformType = 'win' | 'darwin' | 'linux' | 'wsl';
-export type ScriptList = Record<PlatformType, string>;
+export type ScriptList = Partial<Record<PlatformType, string>>;
 export type ScriptHostList = Record<PlatformType, [string, string[]]>;
 
 const pwshArgs = [
@@ -52,13 +52,13 @@ export const createScriptExecutor = (
   const platform = detectPlatform();
   const shell = scriptHost[platform];
 
-  return (list: ScriptList, args = [], timeout = 1000) => {
-    if (platform in list) {
-      const scriptPath = context.asAbsolutePath(list[platform]);
+  return (list: ScriptList, args = [], timeout = 10000) => {
+    if (list[platform]) {
+      const scriptPath = context.asAbsolutePath(list[platform]!);
       const shellArgs = [...shell[1], scriptPath, ...args];
       return new Promise((resolve, reject) => {
         const childProcess = spawn(shell[0], shellArgs, {
-          stdio: ['ignore', 'pipe', 'pipe'],
+          stdio: ['pipe', 'pipe', 'pipe'],
           timeout,
         });
         const chunks: string[] = [];
@@ -71,11 +71,11 @@ export const createScriptExecutor = (
           console.error(chunk);
         });
 
-        childProcess.on('exit', (code) => {
+        childProcess.on('exit', (code, signal) => {
           if (code === 0) {
             resolve(chunks.join(''));
           } else {
-            reject();
+            reject(new Error(`${signal}`));
           }
         });
 
