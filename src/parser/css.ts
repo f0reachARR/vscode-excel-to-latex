@@ -1,4 +1,10 @@
-import { AtRule, Comment, Declaration, parse as parseCss, Rule } from 'css';
+import { Declaration, parse as parseCss, Rule } from 'css';
+import {
+  extractBorderColor,
+  filterDeclarations,
+  filterRules,
+  getValue,
+} from './css-util';
 import {
   Align,
   ColorCode,
@@ -6,7 +12,6 @@ import {
   TableInternal,
   TableCell,
   Border,
-  BorderItem,
 } from './types';
 import { eachCell } from './util';
 
@@ -17,29 +22,6 @@ type PartialStyle = Pick<
   color?: ColorCode;
 };
 type ClassMap = Record<string, Declaration[]>;
-const getValue = (declarations: Declaration[], propertyName: string) => {
-  return declarations.find(
-    (declaration) => declaration.property === propertyName,
-  )?.value;
-};
-
-const extractBorderColor = (
-  border?: string,
-  fallback?: string | null,
-): BorderItem => {
-  if (!border) {
-    return fallback ?? null;
-  }
-
-  const splitted = border.split(/ /);
-  if (splitted.length === 3) {
-    return splitted[2];
-  } else if (border.includes('none')) {
-    return null;
-  } else {
-    return fallback ?? null;
-  }
-};
 
 const createBorder = (declarations: Declaration[], base?: Border): Border => {
   let border: Border = base ?? [null, null, null, null];
@@ -116,17 +98,6 @@ const parseContent = (
 ): DecoratedContent[] => {
   return [];
 };
-
-const filterRules = (rules?: Array<Rule | Comment | AtRule>): Rule[] =>
-  rules?.filter((rule): rule is Rule => rule.type === 'rule') ?? [];
-
-const filterDeclarations = (
-  declarations?: Array<Declaration | Comment>,
-): Declaration[] =>
-  declarations?.filter(
-    (declaration): declaration is Declaration =>
-      declaration.type === 'declaration',
-  ) ?? [];
 
 const parseInlineStyle = (style: string): Declaration[] => {
   try {
