@@ -1,4 +1,5 @@
-import { HTMLElement, NodeType, parse as parseHtml } from 'node-html-parser';
+import { parse as parseHtml } from 'node-html-parser';
+import { filterElement } from './html-util';
 import { TableInternal, TableCellInternal } from './types';
 
 type Range = [number, number, number, number];
@@ -31,19 +32,15 @@ export const parseHtmlToTable = (html: string): TableInternal => {
   const dom = parseHtml(html);
   const tableElement =
     dom.querySelector('tbody') ?? dom.querySelector('table') ?? dom;
-  const rows = tableElement.childNodes
-    .filter(
-      (node): node is HTMLElement => node.nodeType === NodeType.ELEMENT_NODE,
-    )
-    .filter((node) => node.tagName === 'TR');
+  const rows = filterElement(tableElement.childNodes).filter(
+    (node) => node.tagName === 'TR',
+  );
 
   const combinedRange: Array<Range> = [];
   for (const [rowIndex, row] of rows.entries()) {
-    const cols = row.childNodes
-      .filter(
-        (node): node is HTMLElement => node.nodeType === NodeType.ELEMENT_NODE,
-      )
-      .filter((node) => node.tagName === 'TD');
+    const cols = filterElement(row.childNodes).filter(
+      (node) => node.tagName === 'TD',
+    );
 
     table.push([]);
     let actualColIndex = 0;
