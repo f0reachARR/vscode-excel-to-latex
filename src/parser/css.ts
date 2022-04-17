@@ -1,27 +1,21 @@
 import { Declaration, parse as parseCss, Rule } from 'css';
+import { createTextStyle, parseContent } from './css-text';
 import {
   extractBorderColor,
   filterDeclarations,
   filterRules,
   getValue,
 } from './css-util';
-import {
-  Align,
-  ColorCode,
-  DecoratedContent,
-  TableInternal,
-  TableCell,
-  Border,
-} from './types';
+import { ColorCode, TableInternal, Border, TableCellInternal } from './types';
 import { eachCell } from './util';
 
-type PartialStyle = Pick<
-  TableCell,
+export type PartialStyle = Pick<
+  TableCellInternal,
   'align' | 'border' | 'fontStyles' | 'background'
 > & {
   color?: ColorCode;
 };
-type ClassMap = Record<string, Declaration[]>;
+export type ClassMap = Record<string, Declaration[]>;
 
 const createBorder = (declarations: Declaration[], base?: Border): Border => {
   let border: Border = base ?? [null, null, null, null];
@@ -43,7 +37,7 @@ const createBorder = (declarations: Declaration[], base?: Border): Border => {
 
 const createStyle = (declarations: Declaration[]): PartialStyle => {
   const style: PartialStyle = {
-    fontStyles: [],
+    ...createTextStyle(declarations),
     border: createBorder(declarations),
   };
 
@@ -51,52 +45,12 @@ const createStyle = (declarations: Declaration[]): PartialStyle => {
     return style;
   }
 
-  const textAlign = getValue(declarations, 'text-align');
-  if (textAlign && ['center', 'left', 'right'].includes(textAlign)) {
-    style.align = textAlign as Align;
-  }
-
-  const color = getValue(declarations, 'color');
-  if (color) {
-    style.color = color;
-  }
-
   const background = getValue(declarations, 'background');
   if (background) {
     style.background = background;
   }
 
-  const fontStyle = getValue(declarations, 'font-style');
-  if (fontStyle) {
-    if (fontStyle.includes('italic')) {
-      style.fontStyles.push('italic');
-    }
-  }
-
-  const fontWeight = getValue(declarations, 'font-weight');
-  if (fontWeight) {
-    const fontWeightNum = Number(fontWeight);
-    if (!isNaN(fontWeightNum) && fontWeightNum >= 700) {
-      style.fontStyles.push('bold');
-    }
-  }
-
-  const textDecoration = getValue(declarations, 'text-decoration');
-  if (textDecoration) {
-    if (textDecoration.includes('underline')) {
-      style.fontStyles.push('underline');
-    }
-  }
-
   return style;
-};
-
-const parseContent = (
-  rawContent: string,
-  classMap: ClassMap,
-  cellStyle: PartialStyle,
-): DecoratedContent[] => {
-  return [];
 };
 
 const parseInlineStyle = (style: string): Declaration[] => {
@@ -159,5 +113,7 @@ export const parseCssAndApply = (table: TableInternal, css: string) => {
     const style = createStyle(mergedDeclarations);
 
     Object.assign(cell, style);
+
+    cell.content = parseContent(cell.rawContent, classMap, style);
   });
 };

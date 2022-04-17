@@ -49,7 +49,7 @@ export const parseHtmlToTable = (html: string): TableInternal => {
       actualColIndex = getTrueColIndex(combinedRange, rowIndex, actualColIndex);
 
       const cell: TableCellInternal = {
-        rawContent: col.innerHTML,
+        rawContent: col.childNodes,
         rowSpan: Number(col.getAttribute('rowspan') ?? 1), // Must be defined most top-left cell
         colSpan: Number(col.getAttribute('colspan') ?? 1),
         className: col.getAttribute('class') ?? '',
