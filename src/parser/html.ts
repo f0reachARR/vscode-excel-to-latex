@@ -29,7 +29,9 @@ export const parseHtmlToTable = (html: string): TableInternal => {
   const table: TableInternal = [];
 
   const dom = parseHtml(html);
-  const rows = dom.childNodes
+  const tableElement =
+    dom.querySelector('tbody') ?? dom.querySelector('table') ?? dom;
+  const rows = tableElement.childNodes
     .filter(
       (node): node is HTMLElement => node.nodeType === NodeType.ELEMENT_NODE,
     )
