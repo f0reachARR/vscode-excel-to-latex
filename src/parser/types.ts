@@ -1,5 +1,6 @@
 export type ColorCode = string;
-export type Border = ColorCode | null;
+export type BorderItem = ColorCode | null;
+export type Border = [BorderItem, BorderItem, BorderItem, BorderItem];
 export type Align = 'left' | 'right' | 'center';
 export type FontStyle = 'italic' | 'bold' | 'underline';
 
@@ -14,7 +15,7 @@ export interface TableCell {
   rowSpan: number;
   colSpan: number;
   combinedChild: boolean; // Is this cell will be trucuated by col/row span
-  border?: [Border, Border, Border, Border];
+  border?: Border;
   align?: Align;
   background?: ColorCode;
   fontStyles: FontStyle[];
