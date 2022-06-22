@@ -2,25 +2,25 @@ import { Table } from '../parser/types';
 import { createLaTeXCell } from './cell';
 
 type IndentedText = Array<[number, string]>;
-const getTableColCount = (table: Table) => {
+export const getTableColCount = (table: Table) => {
   return table[0].length;
 };
 
-const createColsDefinition = (table: Table): string => {
+export const createColsDefinition = (table: Table): string => {
   const colNum = getTableColCount(table);
   return new Array(colNum + 1).join('c');
 };
 
-const getLengthWithFontSize = (input: string) => {
+export const getLengthWithFontSize = (input: string) => {
   // eslint-disable-next-line no-control-regex
   return input.replace(/[^\x01-\x7E]/g, 'XX').length;
 };
 
-const repeatText = (text: string, count: number) => {
+export const repeatText = (text: string, count: number) => {
   return new Array(count + 1).fill('').join(text);
 };
 
-const createSpacedCells = (cells: Array<string[]>): Array<string[]> => {
+export const createSpacedCells = (cells: Array<string[]>): Array<string[]> => {
   const colsSize = cells.map((rows) =>
     rows.map((row) => getLengthWithFontSize(row)),
   );
@@ -37,7 +37,7 @@ const createSpacedCells = (cells: Array<string[]>): Array<string[]> => {
   );
 };
 
-const createIndentedText = (
+export const createIndentedText = (
   text: IndentedText,
   space: boolean,
   spaceSize = 4,
