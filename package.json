@@ -42,10 +42,10 @@
     "vscode:prepublish": "yarn run compile",
     "compile": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
     "debug-compile": "yarn run compile -- --sourcemap",
-    "test-compile": "tsc -p ./",
+    "test-compile": "tsc -p ./ --outDir ./test-out/",
     "pretest": "yarn run test-compile && yarn run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./test-out/test/runTest.js"
   },
   "devDependencies": {
     "@types/css": "^0.0.33",
