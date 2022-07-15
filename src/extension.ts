@@ -1,32 +1,51 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import vscode from 'vscode';
+import { readClipboard } from './clipboard';
+import { createLaTeXTable } from './latex/table';
+import { parseExcelHtml } from './parser';
+import { createScriptExecutor } from './platform';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log(
-    'Congratulations, your extension "excel-to-latex-copypaste" is now active!',
-  );
-
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
+  const executeScript = createScriptExecutor(context);
   const disposable = vscode.commands.registerCommand(
-    'excel-to-latex-copypaste.helloWorld',
-    () => {
-      // The code you place here will be executed every time your command is executed
-      // Display a message box to the user
-      vscode.window.showInformationMessage(
-        'Hello World from excel-to-latex-copypaste!',
-      );
+    'excel-to-latex-copypaste.copyTableToLaTeX',
+    async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        return;
+      }
+
+      const clipboardText = await readClipboard(executeScript);
+
+      if (!clipboardText) {
+        vscode.window.showErrorMessage('Failed to get clipboard content');
+        return;
+      }
+
+      const table = parseExcelHtml(clipboardText);
+      if (!table) {
+        vscode.window.showErrorMessage(
+          'Clipboard does not contain Excel format',
+        );
+        return;
+      }
+      const renderText = createLaTeXTable(table, {
+        space: !!editor.options.insertSpaces,
+        spaceSize: Number(editor.options.tabSize ?? 4),
+        baseIndent: 0,
+      });
+
+      editor.edit((edit) => {
+        const current = editor.selection;
+        if (current.isEmpty) {
+          edit.insert(current.start, renderText);
+        } else {
+          edit.replace(current, renderText);
+        }
+      });
     },
   );
 
   context.subscriptions.push(disposable);
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() {}

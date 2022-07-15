@@ -41,14 +41,16 @@ export const detectPlatform = (): PlatformType => {
   return 'linux';
 };
 
-export const createScriptExecutor = (
-  context: vscode.ExtensionContext,
-  scriptHost: ScriptHostList = defaultScriptHost,
-): ((
+export type ScriptExecutor = (
   list: ScriptList,
   args?: string[],
   timeout?: number,
-) => Promise<string>) => {
+) => Promise<string>;
+
+export const createScriptExecutor = (
+  context: vscode.ExtensionContext,
+  scriptHost: ScriptHostList = defaultScriptHost,
+): ScriptExecutor => {
   const platform = detectPlatform();
   const shell = scriptHost[platform];
 
