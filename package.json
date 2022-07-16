@@ -1,7 +1,12 @@
 {
   "name": "excel-to-latex-copypaste",
-  "displayName": "excel-to-latex-copypaste",
-  "description": "",
+  "displayName": "Excel To LaTeX",
+  "description": "Copy Excel / Spreadsheet table to LaTeX directly",
+  "publisher": "f0reacharr",
+  "repository": {
+    "url": "https://github.com/f0reachARR/vscode-excel-to-latex",
+    "type": "git"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.66.0"
